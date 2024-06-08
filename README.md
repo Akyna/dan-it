@@ -1,2 +1,6 @@
 # dan-it
 DAN-IT DevOps5
+
+![lesson](https://img.shields.io/badge/HW-01-blue?logo=git&logoColor=white)
+
+### Пройдіть тестування: https://www.w3schools.com/quiztest/quiztest.asp?qtest=GIT uдоки не буде принаймні 23 із 25 правильних відповідей. Екран із результатами надішліть у свій репозиторій git і посилайте URL-адресу тут.
