@@ -1,6 +1,38 @@
 # dan-it
 DAN-IT DevOps5
 
-![lesson](https://img.shields.io/badge/HW-01-blue?logo=git&logoColor=white)
+![lesson](https://img.shields.io/badge/HW-03-blue?logo=git&logoColor=white)
 
-### Пройдіть тестування: https://www.w3schools.com/quiztest/quiztest.asp?qtest=GIT uдоки не буде принаймні 23 із 25 правильних відповідей. Екран із результатами надішліть у свій репозиторій git і посилайте URL-адресу тут.
+### 1. Поясніть етапи завантаження системи Linux.
+1) BIOS прошивка
+2) MBR або GPT завантажувальна секція
+3) Ядро
+4) Ядро запускає основний процес (ID 1)init або systemd в залежності від типу системи
+5) Рівні виконання (runlevels) - не до кінця це зрозуміло але воно останнє
+
+### 2. Як переглянути системні журнали?
+   Йдемо у 
+   ```
+   /var/log
+   ```
+   І потім `cat | less | tail | head`  - і імʼя файлу
+
+### 3. -rw------- : Опишіть цей дозвіл. Як додати прапорець виконуваного файлу?
+1) це файл перший `-`
+2) той хто створив файл `rw-` читаєм пишем але не запускаєм файл
+3) група `---` всі права відсутні
+4) решта `---` всі права відсутні
+   Додати виконання можна або через `chmod +x` але тоді будемо мати -rwx--x--x тобто овнер група решта будуть мати змогу запустити
+   Або через `chmod 700` і будемо мати `-rwx------` тобто тільки овнер буде запускати файл
+   Або через ugo - `chmod u+x,g+x,o+x` більш точно можна задати права
+   Як пише дока
+   ```
+   letters  ugo: the permissions granted to the user who owns the file (u), the permissions granted to
+   other users who are members of the file's group (g), and the permissions granted to users that are in neither of  the  two
+   preceding categories (o)
+   ```
+
+### 4. Яка різниця між apt і dpkg?
+   Обидва є менеджерами пакетів
+   `dpkg` більш низько рівневий і встановлює пакети без залежностей якщо такі є
+   `apt` побудований на основі dpkg - високо рівневий, встановлює пакети з залежностями якщо такі є, має доступ до репозиторій 
