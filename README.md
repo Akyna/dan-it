@@ -1,149 +1,241 @@
 # dan-it
 DAN-IT DevOps5
 
-![lesson](https://img.shields.io/badge/HW-04-blue?logo=git&logoColor=white)
+![lesson](https://img.shields.io/badge/HW-05-blue?logo=git&logoColor=white)
 
-### Створіть користувача з іменем "bob".
+### Exercise 1: Hello World
+Write a Bash script that simply echoes "Hello, World!" when executed.
 ```bash
-akyna@akyna-server:~$ sudo useradd -m bob -s /bin/bash
-[sudo] password for akyna:
-akyna@akyna-server:~$
-```
-### Додайте створеного користувача до групи sudo (щоб він міг виконувати команди як адміністратор).
-```bash
-akyna@akyna-server:~$ sudo usermod -aG sudo bob
-akyna@akyna-server:~$ groups bob
-bob : bob sudo
-akyna@akyna-server:~$ id bob
-uid=1005(bob) gid=1005(bob) groups=1005(bob),27(sudo)
-akyna@akyna-server:~$
-```
-### Створіть сценарій у каталозі /home/bob/, який під час виконання змінить ім'я хоста для "ubuntu22". Атрибути виконання сценарію повинні бути встановлені виключно для користувача "bob".
-```bash
-bob@akyna-server:~$ cat change_host_name.sh
 #!/bin/bash
 
-hostnamectl set-hostname amb-server
-
-bob@akyna-server:~$ ls -l
-total 4
--rwxrw-r-- 1 bob bob 50 Jun 21 14:05 change_host_name.sh
-bob@akyna-server:~$
+echo "Hello World!"
 ```
-### Запустіть сценарій. Перезавантажте систему. Увійти в систему як "bob" користувача.
+### Exercise 2: User Input
+Create a script that asks the user for their name and then greets them using that name.
 ```bash
-bob@akyna-server:~$ ./change_host_name.sh
-==== AUTHENTICATING FOR org.freedesktop.hostname1.set-hostname ====
-Authentication is required to set the local hostname.
-Multiple identities can be used for authentication:
- 1.  akyna
- 2.  bob
-Choose identity to authenticate as (1-2): 2
-Password:
-==== AUTHENTICATION COMPLETE ====
-bob@akyna-server:~$ sudo su
-root@amb-server:/home/bob# echo "127.0.1.1 amb-server" >> /etc/hosts
-root@amb-server:/home/bob# exit
-exit
-bob@akyna-server:~$ cat /etc/hosts
-127.0.0.1 localhost
-127.0.1.1 akyna-server
+echo -n "Enter your name: "
+IFS=' ' read -r name
+echo "Hello $name"
+```
+### Exercise 3: Conditional Statements
+Write a script that checks if a file exists in the current directory. If it does, print a message saying it exists; otherwise, print a message saying it doesn't exist.
+```bash
+echo -n "Enter file name: "
+read -r file_name
+if [ -f "$file_name"  ]; then
+  echo "File exists"
+  else
+    echo "File doesn't exist."
+fi
+```
+### Exercise 4: Looping
+Create a script that uses a loop to print numbers from 1 to 10.
+```bash
+for i in {1..10} ; do
+    echo "$i"
+done
+for (( i = 1; i <= 10; i++ )); do
+    echo "$i"
+done
+```
+### Exercise 5: File Operations
+Write a script that copies a file from one location to another. Both locations should be passed as arguments
+```bash
+#!/bin/bash #-xv
+if [[ -d "$1" && -x "$1" ]] && [[ -d "$2" && -x "$2" ]];
+then
+	cp -fR "$1"/* "$2"/
+  	echo "Copied"
+else
+  echo "Can't copy"
+fi
+```
+### Exercise 6: String Manipulation
+Build a script that takes a user's input as a sentence and then reverses the sentence word by word (e.g., "Hello World" becomes "World Hello").
+```bash
+read -rp "Enter a sentence: " TEXT_INPUT
 
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-127.0.1.1 amb-server
+if [ -z "${TEXT_INPUT}" ]; then
+    echo "Empty input. Bye bye..."
+    exit 1
+fi
+
+list=($TEXT_INPUT)
+for i in `seq $((${#list[@]} - 1)) -1 0`; do
+    echo "${list[$i]}"
+done | xargs
+
+```
+### Exercise 7: Command Line Arguments
+Develop a script that accepts a filename as a command line argument and prints the number of lines in that file.
+```bash
+read -rp "Enter a file name: " FILE_NAME
+
+if [ ! -f "$FILE_NAME" ]; then
+    echo "The file does not exist. Bye..."
+    exit 1
+fi
+
+count=0
+while IFS= read -r list || [[ -n $list ]]; do
+	let count+=1
+done < "$FILE_NAME"
+
+echo "$count"
+```
+### Exercise 8: Arrays
+Write a script that uses an array to store a list of fruits. Loop through the array and print each fruit on a separate line.
+```bash
+fruits=("Apple" "Banana" "Orange" "Pineapple")
+
+for key in "${!fruits[@]}"
+do
+  echo "Key for fruits array is: $key"
+done
+
+for value in "${fruits[@]}"
+do
+  echo "Value for fruits array is: $value"
+done
+
+for key in "${!fruits[@]}"
+do
+  echo "Key is '$key'  => Value is '${fruits[$key]}'"
+done
+```
+### Exercise 9: Error Handling
+Develop a script that attempts to read a file and handles errors gracefully. If the file exists, it should print its contents; if not, it should display an error message.
+```bash
+read -rp "Enter a file name: " FILE_NAME
+
+if [ ! -f "$FILE_NAME" ];
+then
+    echo "Sorry, the file does not exist."
+else
+	cat "$FILE_NAME"
+	echo
+fi
 ```
 
-```bash
-andriiboiko@AMB-MacBook-Pro-16 ~ % ssh bob@192.168.183.129
-...
-Last login: Fri Jun 21 14:14:51 2024 from 192.168.183.1
-bob@amb-server:~$
+### Systemd service
 
-```
-### Встановіть "nginx". Перевірте, чи працює nginx, а також використовуйте netstat, щоб побачити, які порти є ВІДЧИНЕНО.
+Write script which watching directory "~/watch". If it sees that there appeared a new file, it prints files content and rename it to *.back 
+Write SystemD service for this script and make it running
 ```bash
-bob@amb-server:~$ systemctl status nginx
-● nginx.service - A high performance web server and a reverse proxy server
-     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; preset: enabled)
-     Active: active (running) since Fri 2024-06-21 14:30:38 UTC; 1min 41s ago
-       Docs: man:nginx(8)
-    Process: 4216 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
-    Process: 4218 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
-   Main PID: 4219 (nginx)
-      Tasks: 3 (limit: 4550)
-     Memory: 2.3M (peak: 2.6M)
-        CPU: 7ms
-     CGroup: /system.slice/nginx.service
-             ├─4219 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
-             ├─4220 "nginx: worker process"
-             └─4221 "nginx: worker process"
-bob@amb-server:~$
+cd ~
+mkdir watch
+
+sudo su
+touch /var/log/akyna_file_monitor_user.log
+chown akyna:akyna /var/log/akyna_file_monitor_user.log
+
+cd /usr/local/bin/
+vi akyna_file_monitor.sh
 ```
 ```bash
-bob@amb-server:/etc/nginx/sites-enabled$ netstat
-Active Internet connections (w/o servers)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State
-tcp        0      0 192.168.183.129:http    192.168.183.1:51589     ESTABLISHED
-tcp        0      0 192.168.183.129:http    192.168.183.1:51588     ESTABLISHED
-tcp6       0    232 amb-server:ssh          192.168.183.1:51225     ESTABLISHED
-udp        0      0 192.168.183.129:42692   192.168.183.2:domain    ESTABLISHED
+#!/bin/bash
+
+EXT=back
+DIR=~/watch/*
+
+echo "${DIR%\/*}"
+if [[ ! -d ${DIR%\/*} ]]; then
+	echo "The directory does not exist"
+	exit 1
+fi
+
+for i in $DIR; do
+    if [ "${i}" == "${i%.${EXT}}" ];
+	then
+		[ -f "$i" ] || continue
+		echo "File: $i" >> /var/log/akyna_file_monitor_user.log
+		cat "$i" >> /var/log/akyna_file_monitor_user.log
+		echo "--------" >> /var/log/akyna_file_monitor_user.log
+		mv "$i" "$i".back
+    fi
+done
 ```
 ```bash
-bob@amb-server:/etc/nginx/sites-enabled$ sudo netstat -ntlp
-Active Internet connections (only servers)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      4219/nginx: master
-tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      633/systemd-resolve
-tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      633/systemd-resolve
-tcp6       0      0 :::80                   :::*                    LISTEN      4219/nginx: master
-tcp6       0      0 :::22                   :::*                    LISTEN      1/init
-bob@amb-server:/etc/nginx/sites-enabled$
+chmod +x akyna_file_monitor.sh
+cd /etc/systemd/system
+vi akyna_file_monitor.service
 ```
 ```bash
-bob@amb-server:/etc/nginx/sites-enabled$ sudo ufw status verbose
-Status: active
-Logging: on (low)
-Default: deny (incoming), allow (outgoing), disabled (routed)
-New profiles: skip
+[Unit]
+Description=Monitor '~/watch' folder every 5 seconds
 
-To                         Action      From
---                         ------      ----
-22/tcp                     ALLOW IN    Anywhere
-80/tcp                     ALLOW IN    Anywhere
-22/tcp (v6)                ALLOW IN    Anywhere (v6)
-80/tcp (v6)                ALLOW IN    Anywhere (v6)
+[Service]
+User=akyna
+ExecStart=/usr/local/bin/akyna_file_monitor.sh
 
-bob@amb-server:/etc/nginx/sites-enabled$
+[Install]
+WantedBy=multi-user.target
 ```
 ```bash
-bob@amb-server:/etc/nginx/sites-enabled$ curl localhost
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
+vi akyna_file_monitor.timer
+```
+```bash
+[Unit]
+Description=Monitor '~/watch' folder every 5 seconds timer
 
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
+[Timer]
+OnCalendar=*:*:0/5
+AccuracySec=1s
 
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
-bob@amb-server:/etc/nginx/sites-enabled$
+[Install]
+WantedBy=timers.target
+```
+```bash
+systemctl daemon-reload
+systemctl enable --now akyna_file_monitor.timer
+systemctl status akyna_file_monitor.timer akyna_file_monitor.service
+```
+```bash
+akyna@amb-server:/etc/systemd/system$ systemctl status akyna_file_monitor.timer akyna_file_monitor.service
+● akyna_file_monitor.timer - Monitor '~/watch' folder every 5 seconds timer
+     Loaded: loaded (/etc/systemd/system/akyna_file_monitor.timer; enabled; preset: enabled)
+     Active: active (waiting) since Fri 2024-06-28 18:17:17 UTC; 1h 51min left
+    Trigger: Fri 2024-06-28 16:25:30 UTC; 1s left
+   Triggers: ● akyna_file_monitor.service
+
+Jun 28 18:17:17 amb-server systemd[1]: Started akyna_file_monitor.timer - Monitor '~/watch' folder every 5 seconds timer.
+
+○ akyna_file_monitor.service - Monitor '~/watch' folder every 5 seconds
+     Loaded: loaded (/etc/systemd/system/akyna_file_monitor.service; disabled; preset: enabled)
+     Active: inactive (dead) since Fri 2024-06-28 16:25:25 UTC; 2s ago
+   Duration: 3ms
+TriggeredBy: ● akyna_file_monitor.timer
+    Process: 1638 ExecStart=/usr/local/bin/akyna_file_monitor.sh (code=exited, status=0/SUCCESS)
+   Main PID: 1638 (code=exited, status=0/SUCCESS)
+        CPU: 3ms
+
+Jun 28 16:25:25 amb-server systemd[1]: Started akyna_file_monitor.service - Monitor '~/watch' folder every 5 seconds.
+Jun 28 16:25:25 amb-server akyna_file_monitor.sh[1638]: /home/akyna/watch
+Jun 28 16:25:25 amb-server systemd[1]: akyna_file_monitor.service: Deactivated successfully.
+akyna@amb-server:/etc/systemd/system$
+```
+```bash
+sudo su akyna
+cd ~/watch
+vi file_1.txt
+```
+```bash
+SOME NEW INPUT
+```
+```bash
+akyna@amb-server:~/watch$ ls
+file_1.txt
+akyna@amb-server:~/watch$
+```
+```bash
+akyna@amb-server:~/watch$ ls
+file_1.txt.back
+akyna@amb-server:~/watch$
+```
+```bash
+akyna@amb-server:~/watch$ tail /var/log/akyna_file_monitor_user.log
+File: /home/akyna/watch/file_1.txt
+SOME NEW INPUT
+--------
+akyna@amb-server:~/watch$
 ```
