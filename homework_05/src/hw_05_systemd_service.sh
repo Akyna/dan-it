@@ -24,4 +24,4 @@ for i in $DIR; do
 		mv "$i" "$i".back
     fi
 done
- 
+
