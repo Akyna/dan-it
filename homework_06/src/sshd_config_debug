@@ -1,0 +1,11 @@
+# /etc/ssh/sshd_config_debug
+Port 3333
+PermitRootLogin no
+PasswordAuthentication yes
+PermitEmptyPasswords no
+KbdInteractiveAuthentication no
+UsePAM yes
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+Subsystem	sftp	/usr/lib/openssh/sftp-server
