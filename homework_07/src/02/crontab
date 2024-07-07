@@ -6,7 +6,4 @@
 #
 # m h  dom mon dow   command
 
-
-THRESHOLD=60
-
- * * * * * /bin/bash /root/disk_size_monit.sh
+ * * * * * /bin/bash /root/disk_size_monit.sh 60
