@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+db_vm_ip='192.168.33.10'
+app_vm_ip='192.168.33.11'
+
+ENV_DATA={
+"DB_HOST" => db_vm_ip,
+"DB_PORT" => 3306,
+"DB_USER" => "akyna",
+"DB_PASS" => "akyna",
+"DB_NAME" => "step_project_1",
+"APP_USER" => "akyna",
+"PROJECT_DIR" => "/home/akyna/web"
+}
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "db_vm" do |db_vm|
+    db_vm.vm.box = "bento/ubuntu-20.04"
+    db_vm.vm.define "db_vm"
+    db_vm.vm.network "private_network", ip: db_vm_ip
+    db_vm.vm.provider "vmware_desktop" do |v|
+      v.vmx["memsize"] = "4096"
+      v.vmx["numvcpus"] = "4"
+    end
+    db_vm.vm.provision :shell, path: "db_bootstrap.sh", run: 'always', env: ENV_DATA
+  end
+
+  config.vm.define "app_vm" do |app_vm|
+    app_vm.vm.box = "bento/ubuntu-20.04"
+    app_vm.vm.define "app_vm"
+    app_vm.vm.network "private_network", ip: app_vm_ip
+    app_vm.vm.provider "vmware_desktop" do |v|
+      v.vmx["memsize"] = "12288"
+      v.vmx["numvcpus"] = "4"
+    end
+    app_vm.vm.provision :shell, path: "app_bootstrap.sh", run: 'always', env: ENV_DATA
+  end
+
+end
