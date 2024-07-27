@@ -27,13 +27,13 @@ else
   mvn clean package
   cp target/*.jar "${PROJECT_DIR}"/web.jar
   cd "${PROJECT_DIR}"/ || return
-  export DB_HOST="${DB_HOST}"
-  export DB_PORT="${DB_PORT}"
-  export DB_NAME="${DB_NAME}"
-  export DB_USER="${DB_USER}"
-  export DB_PASS="${DB_PASS}"
 #  sudo -u "${APP_USER}" nohup java -jar target/*.jar >/dev/null 2>&1 &
-  sudo -u "${APP_USER}" nohup java -jar web.jar >/dev/null 2>&1 &
+#  sudo -u "${APP_USER}" nohup java -jar web.jar >/dev/null 2>&1 &
+  sudo -u akyna nohup java -jar \
+  -DMYSQL_URL=jdbc:mysql://"${DB_HOST}"/"${DB_NAME}" \
+  -DMYSQL_USER="${DB_USER}" \
+  -DMYSQL_PASS="${DB_PASS}" \
+  -Dspring.profiles.active=mysql web.jar >/dev/null 2>&1 &
 fi
 
 echo "Finish WEB service"
