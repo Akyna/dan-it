@@ -1,0 +1,13 @@
+.DS_Store
+/.idea/.gitignore
+/.idea/dan-it.iml
+/.idea/vcs.xml
+/.idea/modules.xml
+/temp/
+/homework_08/src/.vagrant/
+/step_project_1/src/.vagrant/
+/step_project_1/src/ssh/id_ed25519
+/step_project_1/src/ssh/id_ed25519.pub
+/step_project_1/src/ssh/known_hosts
+/**/__pycache__
+/**/.idea/
