@@ -11,3 +11,5 @@
 /step_project_1/src/ssh/known_hosts
 /**/__pycache__
 /**/.idea/
+/step_project_2/src/jenkins_home/
+/step_project_2/src/jenkins_worker/
