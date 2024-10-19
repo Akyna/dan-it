@@ -2,6 +2,8 @@
 
 DAN-IT DevOps5
 
+[![lesson](https://img.shields.io/badge/HW-01-25a148?logo=git&logoColor=white)](https://github.com/Akyna/dan-it/tree/main/homework_01)
+
 [![lesson](https://img.shields.io/badge/HW-05-25a148?logo=git&logoColor=white)](https://github.com/Akyna/dan-it/tree/main/homework_05)
 
 [![lesson](https://img.shields.io/badge/HW-06-25a148?logo=git&logoColor=white)](https://github.com/Akyna/dan-it/tree/main/homework_06)
