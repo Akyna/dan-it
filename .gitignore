@@ -17,3 +17,5 @@
 /homework_19/src/.terraform.lock.hcl
 /homework_19/src/terraform.tfstate
 /homework_19/src/terraform.tfstate.backup
+/homework_20/src/.terraform.lock.hcl
+/homework_20/src/.terraform/
