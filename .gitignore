@@ -13,9 +13,8 @@
 /**/.idea/
 /step_project_2/src/jenkins_home/
 /step_project_2/src/jenkins_worker/
-/homework_19/src/.terraform
-/homework_19/src/.terraform.lock.hcl
-/homework_19/src/terraform.tfstate
-/homework_19/src/terraform.tfstate.backup
-/homework_20/src/.terraform.lock.hcl
-/homework_20/src/.terraform/
+.terraform.lock.hcl
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.vscode/

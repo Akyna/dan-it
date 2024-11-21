@@ -1,0 +1,7 @@
+- name: DAN-IT_HW_21
+  hosts: hw_21_servers
+  become: true
+  roles:
+    - ping
+    - update
+    - docker
