@@ -1,0 +1,9 @@
+---
+- name: Configure public instance via Terraform & Ansible
+  hosts: all # must be all if we want to use from under terraform
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
