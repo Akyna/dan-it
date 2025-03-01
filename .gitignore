@@ -20,3 +20,4 @@ terraform.tfstate.backup
 .vscode/
 /step_project_3/src/ansible/playbook_template.yaml
 /step_project_4/temp/
+/final_project/temp/

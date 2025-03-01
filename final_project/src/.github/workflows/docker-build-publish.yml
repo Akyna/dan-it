@@ -1,0 +1,115 @@
+name: Build and Publish application
+
+run-name: ${{ github.actor }} is testing out GitHub Actions -${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} 🚀
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'K8S/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Потрібно що це працювало --> git push origin "v$VERSION" -- з кроку Calculate semantic version
+    env:
+      APP_NAME: dan_it_final_project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Отримуємо повну історію, щоб побачити всі теги
+
+      - name: Calculate semantic version
+        id: semver # дозволяє іншим крокам або job отримати доступ до виходу конкретного кроку через його id (у нашому випадку semver).
+        run: |
+          # Спочатку перевіряємо, чи є вже теги з версією
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+          
+          if [ -z "$LATEST_TAG" ]; then
+            # Якщо тегів немає, починаємо з 1.0.0
+            MAJOR=1
+            MINOR=0
+            PATCH=0
+          else
+            # Парсимо останню версію
+            LATEST_TAG=${LATEST_TAG#v}
+            MAJOR=$(echo $LATEST_TAG | cut -d. -f1)
+            MINOR=$(echo $LATEST_TAG | cut -d. -f2)
+            PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+          
+            # Перевіряємо повідомлення коміту для визначення типу зміни
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+          
+            if [[ "$COMMIT_MSG" == *"BREAKING CHANGE"* || "$COMMIT_MSG" == *"#major"* ]]; then
+              # Мажорна зміна
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+            elif [[ "$COMMIT_MSG" == *"feat:"* || "$COMMIT_MSG" == *"#minor"* ]]; then
+              # Мінорна зміна - нова функціональність
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            else
+              # За замовчуванням - патч
+              PATCH=$((PATCH + 1))
+            fi
+          fi
+          
+          VERSION="$MAJOR.$MINOR.$PATCH"
+          
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # Це дозволяє іншим крокам workflow отримати доступ до змінної через синтаксис ${{ steps.semver.outputs.version }}.
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Створюємо новий тег
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "v$VERSION"
+
+
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v${{ steps.semver.outputs.version }}
+          release_name: Release v${{ steps.semver.outputs.version }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64 # k8c uses the Linux system
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:latest
+
+          # or
+          # tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:${{ github.run_number }}
+
+      - name: Update K8S deployment
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          sed -i "s|image: akyna/dan_it_final_project:.*|image: akyna/dan_it_final_project:${{ env.VERSION }}|g" K8S/deployment.yaml
+
+          git add K8S/deployment.yaml
+          git commit -m "Update deployment image to version ${{ env.VERSION }}"
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
